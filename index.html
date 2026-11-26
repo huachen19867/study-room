@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>耳边自习室</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="room">
+  <header class="masthead">
+    <div class="site-name"><h1>耳边自习室</h1><p id="libraryLength"></p></div>
+    <button type="button" id="focus" class="quiet-button" aria-pressed="false">专注模式</button>
+  </header>
+  <div class="layout">
+    <div class="studio">
+      <section class="hero" aria-label="当前曲目">
+        <img id="cover" alt="" fetchpriority="high">
+        <div class="hero-copy">
+          <p class="eyebrow" id="style"></p>
+          <h2 id="theme"></h2>
+          <p class="track" id="track"></p>
+          <p class="desc" id="description"></p>
+        </div>
+      </section>
+      <div class="deck" aria-label="播放器">
+        <div class="progress">
+          <input id="seek" type="range" min="0" max="1" step="0.1" value="0" aria-label="播放进度" disabled>
+          <span class="time" id="time">0:00 / 0:00</span>
+        </div>
+        <div class="transport">
+          <button id="prev" type="button" aria-label="上一首">‹</button>
+          <button id="play" type="button" class="primary">播放</button>
+          <button id="next" type="button" aria-label="下一首">›</button>
+          <label class="volume" for="volume">
+            <span>音量</span><input id="volume" type="range" min="0" max="100" value="65">
+          </label>
+        </div>
+        <div class="chapter-row" id="chapterRow">
+          <label for="chapters">乐章</label>
+          <select id="chapters" aria-label="跳到章节" disabled></select>
+        </div>
+        <details class="settings" id="settings">
+          <summary>背景与播放设置</summary>
+          <div class="mixer">
+            <label>画面 <select id="backdrop"><option value="auto">跟随曲目</option><option value="rain">雨窗</option><option value="cafe">咖啡馆</option><option value="forest">树林</option><option value="sea">海浪</option><option value="night">星空</option><option value="piano-margin">图书馆</option><option value="piano-elevator">楼宇</option><option value="piano-index">手写纸页</option><option value="piano-tick">沙漏</option><option value="anime-club">放学后的音乐室</option><option value="anime-train">山谷慢车</option><option value="anime-ending">蓝调时分的书桌</option><option value="anime-opening">夕阳里的学校天台</option><option value="mix-jazz">钢琴上的票根</option><option value="mix-chamber">封蜡信纸</option><option value="mix-electronic">蓝色的第九扇窗</option><option value="study-bossa">阳光天井</option><option value="study-celtic">海岬灯塔</option><option value="study-mallet">蓝色玻璃珠</option><option value="plain">纯色</option></select></label>
+            <label>环境声 <select id="ambience"><option value="">关闭</option><option value="rain-bed">雨声</option><option value="waves">海浪</option><option value="wind">风声</option></select></label>
+            <label>环境音量 <input id="ambienceVolume" type="range" min="0" max="100" value="24" disabled></label>
+            <label>循环 <select id="repeat"><option value="all">整张歌单</option><option value="one">当前曲目</option></select></label>
+            <a id="download" download>下载这首</a>
+          </div>
+        </details>
+        <p id="status" role="status" hidden></p>
+      </div>
+    </div>
+    <section class="library" id="libraryPanel" aria-labelledby="shelfTitle">
+      <div class="library-heading"><h2 id="shelfTitle">自习歌单</h2><button type="button" id="locate" class="quiet-button">定位当前曲目</button></div>
+      <div class="browse">
+        <input type="search" id="search" placeholder="搜索曲名、风格或乐器" aria-label="搜索曲名、风格或乐器">
+        <select id="genre" aria-label="筛选风格">
+          <option value="">全部风格</option>
+          <option value="piano">钢琴独奏</option><option value="screen">动画配乐</option>
+          <option value="acoustic">民谣与原声</option><option value="classical">室内乐与极简</option>
+          <option value="jazz">爵士与巴萨</option><option value="electronic">电子与氛围</option>
+        </select>
+      </div>
+      <p id="emptyShelf" class="empty" role="status" hidden>没找到匹配的曲目。</p>
+      <div id="shelf" class="shelf"></div>
+    </section>
+  </div>
+</main>
+<audio id="music" preload="metadata"></audio>
+<audio id="bed" preload="none" loop></audio>
+<script src="themes.js"></script>
+<script src="long-tracks.js"></script>
+<script src="piano-tracks.js"></script>
+<script src="anime-themes.js"></script>
+<script src="anime-tracks.js"></script>
+<script src="opening-track.js"></script>
+<script src="variety-tracks.js"></script>
+<script src="encore-tracks.js"></script>
+<script src="player.js"></script>
+</body>
+</html>

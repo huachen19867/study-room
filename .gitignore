@@ -1,0 +1,10 @@
+/reference/
+__pycache__/
+*.pyc
+*.part.mp3
+/media/*.mp3
+!/media/*-long.mp3
+/media/*.wav
+!/media/rain-bed.wav
+!/media/waves.wav
+!/media/wind.wav
