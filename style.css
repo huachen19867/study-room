@@ -48,7 +48,7 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible,su
 input[type=range] { accent-color: var(--accent); min-width: 0; cursor: pointer; }
 #seek { width: 100%; margin: 0; }
 .time { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 12px; }
-.transport { margin-top: 11px; gap: 8px; }
+.transport { flex-wrap: wrap; margin-top: 11px; gap: 8px; }
 .transport button { min-width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 7px; background: transparent; line-height: 1; }
 .transport button:hover { background: #383e33; }
 .transport .primary { min-width: 78px; padding: 0 13px; background: var(--accent); border-color: transparent; color: #151916; font-weight: 700; }

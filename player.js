@@ -3,6 +3,7 @@ const pianoTracks = globalThis.studyPianoTracks;
 const library = globalThis.studyLongTracks;
 const themes = [
   { ...globalThis.studyOpeningTrack, kind: 'opening' },
+  ...globalThis.studyReadingTracks.map(track => ({ ...track, kind: track.id === 'study-soundboard' ? 'piano' : 'encore' })),
   ...globalThis.studyVarietyTracks.map(track => ({ ...track, kind: 'variety' })),
   ...globalThis.studyEncoreTracks.map(track => ({ ...track, kind: 'encore' })),
   ...pianoTracks.map(track => ({ ...track, kind: 'piano' })),
@@ -26,6 +27,39 @@ const repeat = control('repeat');
 const musicVolume = control('volume');
 let chapters = [];
 let current = 0;
+const covers = { 'study-soundboard': 'piano-reading-room.png', 'study-platform': 'anime-train.jpg' };
+const coverPath = id => 'media/' + (covers[id] ?? id + '.jpg');
+
+let history = [];
+let cursor = 0;
+let remaining = [];
+
+function resetShuffle() {
+  history = [current];
+  cursor = 0;
+  remaining = themes.map((_, i) => i).filter(i => i !== current);
+}
+
+function stepTrack(direction, start) {
+  if (repeat.value !== 'shuffle') return select(current + direction, start);
+  if (!history.length) resetShuffle();
+  if (direction < 0) {
+    if (cursor === 0) return;
+    cursor--;
+  } else if (cursor < history.length - 1) {
+    cursor++;
+  } else {
+    const newRound = remaining.length === 0;
+    if (newRound) remaining = themes.map((_, i) => i);
+    const choices = newRound && remaining.length > 1 ? remaining.filter(i => i !== current) : remaining;
+    const next = choices[Math.floor(Math.random() * choices.length)];
+    remaining.splice(remaining.indexOf(next), 1);
+    history.push(next);
+    if (history.length > themes.length * 2) history.shift();
+    cursor = history.length - 1;
+  }
+  select(history[cursor], start);
+}
 
 const sessionKey = 'study-room.session.v1';
 let pendingPosition = 0;
@@ -52,6 +86,9 @@ function saveSession() {
       volume: musicVolume.value,
       bedVolume: bedVolume.value,
       repeat: repeat.value,
+      shuffle: repeat.value === 'shuffle' ? {
+        history: history.map(i => themes[i].id), cursor, remaining: remaining.map(i => themes[i].id),
+      } : undefined,
     }));
   } catch {
     // Playback remains available when browser storage is disabled.
@@ -120,7 +157,7 @@ function renderShelf() {
     card.type = 'button';
     card.className = 'card';
     const image = document.createElement('img');
-    image.src = 'media/' + theme.id + '.jpg';
+    image.src = coverPath(theme.id);
     image.alt = '';
     image.loading = 'lazy';
     const name = document.createElement('span');
@@ -129,7 +166,16 @@ function renderShelf() {
     tag.textContent = theme.tag + ' · ' + clock(theme.seconds);
     card.append(image, name, tag);
     card.onclick = () => {
-      if (position !== current) select(position, true);
+      if (position !== current) {
+        if (repeat.value === 'shuffle') {
+          history.splice(cursor + 1);
+          history.push(position);
+          if (history.length > themes.length * 2) history.shift();
+          cursor = history.length - 1;
+          remaining = remaining.filter(i => i !== position);
+        }
+        select(position, true);
+      }
       else if (music.paused) play();
     };
     shelf.append(card);
@@ -186,7 +232,7 @@ function showBackdrop(theme) {
   const image = choice === 'auto' ? theme.id : choice;
   const cover = control('cover');
   cover.hidden = image === 'plain';
-  if (!cover.hidden) cover.src = 'media/' + image + '.jpg';
+  if (!cover.hidden) cover.src = coverPath(image);
   cover.parentElement.classList.toggle('piano', cover.hidden);
 }
 
@@ -224,10 +270,15 @@ function select(index, start, position = 0) {
 }
 
 control('play').onclick = () => music.paused ? play() : music.pause();
-control('prev').onclick = () => select(current - 1, !music.paused);
-control('next').onclick = () => select(current + 1, !music.paused);
+control('prev').onclick = () => stepTrack(-1, !music.paused);
+control('next').onclick = () => stepTrack(1, !music.paused);
 repeat.onchange = () => {
   music.loop = repeat.value === 'one';
+  if (repeat.value === 'shuffle') {
+    resetShuffle();
+    stepTrack(1, true);
+    return;
+  }
   saveSession();
 };
 search.oninput = filterShelf;
@@ -296,7 +347,7 @@ window.addEventListener('pagehide', saveSession);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) saveSession();
 });
-music.addEventListener('ended', () => select(current + 1, true));
+music.addEventListener('ended', () => stepTrack(1, true));
 music.addEventListener('error', () => report('找不到或无法读取当前音频文件。'));
 renderShelf();
 const session = loadSession();
@@ -311,4 +362,20 @@ applyAmbience();
 const savedKind = session.kind === 'short' ? 'long' : session.kind;
 const savedTrack = themes.findIndex(theme => theme.id === session.id && theme.kind === savedKind);
 const resumeAt = savedTrack >= 0 && savedKind === session.kind && Number.isFinite(session.position) ? Math.max(0, session.position) : 0;
-select(Math.max(0, savedTrack), false, resumeAt);
+current = Math.max(0, savedTrack);
+if (repeat.value === 'shuffle') {
+  resetShuffle();
+  const state = session.shuffle;
+  if (Array.isArray(state?.history) && Array.isArray(state.remaining)) {
+    const indexOf = id => themes.findIndex(track => track.id === id);
+    const past = state.history.map(indexOf);
+    const pool = state.remaining.map(indexOf);
+    if (Number.isInteger(state.cursor) && past[state.cursor] === current &&
+        past.every(i => i >= 0) && pool.every(i => i >= 0)) {
+      history = past;
+      cursor = state.cursor;
+      remaining = pool;
+    }
+  }
+}
+select(current, false, resumeAt);

@@ -32,6 +32,9 @@
           <button id="prev" type="button" aria-label="上一首">‹</button>
           <button id="play" type="button" class="primary">播放</button>
           <button id="next" type="button" aria-label="下一首">›</button>
+          <select id="repeat" aria-label="播放方式">
+            <option value="all">顺序播放</option><option value="shuffle">随机播放</option><option value="one">单曲循环</option>
+          </select>
           <label class="volume" for="volume">
             <span>音量</span><input id="volume" type="range" min="0" max="100" value="65">
           </label>
@@ -43,10 +46,9 @@
         <details class="settings" id="settings">
           <summary>背景与播放设置</summary>
           <div class="mixer">
-            <label>画面 <select id="backdrop"><option value="auto">跟随曲目</option><option value="rain">雨窗</option><option value="cafe">咖啡馆</option><option value="forest">树林</option><option value="sea">海浪</option><option value="night">星空</option><option value="piano-margin">图书馆</option><option value="piano-elevator">楼宇</option><option value="piano-index">手写纸页</option><option value="piano-tick">沙漏</option><option value="anime-club">放学后的音乐室</option><option value="anime-train">山谷慢车</option><option value="anime-ending">蓝调时分的书桌</option><option value="anime-opening">夕阳里的学校天台</option><option value="mix-jazz">钢琴上的票根</option><option value="mix-chamber">封蜡信纸</option><option value="mix-electronic">蓝色的第九扇窗</option><option value="study-bossa">阳光天井</option><option value="study-celtic">海岬灯塔</option><option value="study-mallet">蓝色玻璃珠</option><option value="plain">纯色</option></select></label>
+            <label>画面 <select id="backdrop"><option value="auto">跟随曲目</option><option value="rain">雨窗</option><option value="cafe">咖啡馆</option><option value="forest">树林</option><option value="sea">海浪</option><option value="night">星空</option><option value="piano-margin">图书馆</option><option value="piano-elevator">楼宇</option><option value="piano-index">手写纸页</option><option value="piano-tick">沙漏</option><option value="anime-club">放学后的音乐室</option><option value="anime-train">山谷慢车</option><option value="anime-ending">蓝调时分的书桌</option><option value="anime-opening">夕阳里的学校天台</option><option value="mix-jazz">钢琴上的票根</option><option value="mix-chamber">封蜡信纸</option><option value="mix-electronic">蓝色的第九扇窗</option><option value="study-bossa">阳光天井</option><option value="study-celtic">海岬灯塔</option><option value="study-mallet">蓝色玻璃珠</option><option value="study-soundboard">琴腹阅览室</option><option value="plain">纯色</option></select></label>
             <label>环境声 <select id="ambience"><option value="">关闭</option><option value="rain-bed">雨声</option><option value="waves">海浪</option><option value="wind">风声</option></select></label>
             <label>环境音量 <input id="ambienceVolume" type="range" min="0" max="100" value="24" disabled></label>
-            <label>循环 <select id="repeat"><option value="all">整张歌单</option><option value="one">当前曲目</option></select></label>
             <a id="download" download>下载这首</a>
           </div>
         </details>
@@ -79,6 +81,7 @@
 <script src="opening-track.js"></script>
 <script src="variety-tracks.js"></script>
 <script src="encore-tracks.js"></script>
+<script src="reading-tracks.js"></script>
 <script src="player.js"></script>
 </body>
 </html>
